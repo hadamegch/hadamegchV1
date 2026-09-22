@@ -185,6 +185,22 @@ body::before{
 .team-sum{ font-size:11.5px; font-weight:800; padding:4px 11px; border-radius:20px; white-space:nowrap; background:rgba(255,255,255,0.08); color:var(--text-1); }
 .team-sum.ok{ background:rgba(61,220,132,0.14); color:var(--green); }
 .team-sum.bad{ background:rgba(255,61,87,0.15); color:#ff7386; }
+.mv-team{
+  flex:0 1 auto; max-width:150px; height:26px; padding:0 6px; cursor:pointer;
+  background:var(--bg); color:var(--text-1); font-family:inherit; font-size:12px; font-weight:700;
+  border:1px solid var(--line-2); border-radius:7px;
+}
+.mv-team:hover:not(:disabled){ border-color:var(--text-2); }
+.mv-team:focus{ outline:none; border-color:var(--green); }
+.mv-team:disabled{ opacity:.55; cursor:not-allowed; }
+.pt-num{ flex-shrink:0; min-width:34px; text-align:right; font-size:12.5px; font-weight:800; color:var(--text-1); font-variant-numeric:tabular-nums; }
+.mv-sel{
+  flex-shrink:0; width:34px; height:28px; padding:0; text-align:center; text-align-last:center; cursor:pointer;
+  background:var(--bg); color:var(--text-1); font-family:inherit; font-size:14px; font-weight:800;
+  border:1px solid var(--line-2); border-radius:7px; appearance:none; -webkit-appearance:none;
+}
+.mv-sel:hover{ border-color:var(--text-2); }
+.mv-sel:focus{ outline:none; border-color:var(--green); }
 .num-box{
   width:58px; flex-shrink:0; height:28px; padding:0 6px; text-align:center;
   background:var(--bg); color:var(--text-0); font-family:inherit; font-size:13px; font-weight:700;
@@ -279,6 +295,13 @@ input.team-name:hover, input.team-name:focus{ border-bottom-color:var(--line-2);
 .score-bar .n{ background:rgba(255,255,255,0.12); }
 
 /* ---------- шигшээ (bracket) ---------- */
+.tour-tabs{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:2px 0 14px; }
+.tour-tab{ font:inherit; font-size:13px; font-weight:700; padding:8px 14px; border-radius:20px; cursor:pointer;
+  background:var(--surface); color:var(--text-1); border:1px solid var(--line-2); }
+.tour-tab small{ font-weight:600; opacity:.7; margin-left:6px; }
+.tour-tab:hover{ border-color:var(--text-2); }
+.tour-tab.active{ background:rgba(61,220,132,0.14); color:var(--green); border-color:var(--green); }
+.tour-tab.add{ border-style:dashed; background:transparent; }
 .tour-actions{ margin-left:auto; display:flex; gap:10px; flex-wrap:wrap; }
 .sub-head{ margin:26px 0 14px; font-family:var(--display); font-size:17px; font-weight:600; letter-spacing:0.3px; color:var(--text-1); }
 .bracket-scroll{ overflow-x:auto; padding:6px 4px 14px; margin:0 -4px; }
@@ -588,8 +611,9 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
 <main class="wrap" id="viewTour" hidden>
   <section class="panel glass">
     <div class="panel-head">
-      <h2>Тэмцээн</h2>
+      <h2 id="tourTitle">Тэмцээн</h2>
     </div>
+    <div class="tour-tabs" id="tourTabs" hidden></div>
     <div class="scoreboard" id="tourScore"></div>
     <div class="tour-bar" id="tourBar">
       <span class="hint">Тоглолт дуусахад хожсон багийн нэр дээр дарна — баг дараагийн шатанд шилжинэ. Дахин дарвал буцаана.</span>
@@ -674,7 +698,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   var KEY = 'role5teams:v2';
 
   var RKEY = 'role5teams:roster:v1';
-  var state = { players: [], teams: [], pickRole: 1, nextP: 1, started: false, view: 'reg', seed: [], picks: {}, applied: null };
+  var state = { players: [], teams: [], pickRole: 1, nextP: 1, started: false, tourNo: 0, played: [], tours: [], cur: -1, lastTour: 0, ws: null, view: 'reg', seed: [], picks: {}, applied: null };
   var roster = [];   // {name, role} — тэмцээн арилсан ч үлдэнэ
 
   function saveRoster(){
@@ -702,8 +726,35 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     return null;
   }
 
+  // Тэмцээн нээлттэй байх үед state.players/teams/seed/picks/applied нь тэр тэмцээнийх байна;
+  // бүртгэл/баг хуваалтын ажлын талбар state.ws-д түр хадгалагдана.
+  function writeBack(){
+    var t = state.tours[state.cur]; if(!t) return;
+    t.players = state.players; t.teams = state.teams; t.seed = state.seed; t.picks = state.picks; t.applied = state.applied;
+  }
+  function openTour(i){
+    if(i < 0 || i >= state.tours.length || state.cur === i) return;
+    if(state.cur >= 0) writeBack(); else state.ws = { players:state.players, teams:state.teams };
+    var t = state.tours[i];
+    state.players = t.players; state.teams = t.teams; state.seed = t.seed; state.picks = t.picks; state.applied = t.applied;
+    state.cur = i; state.started = true;
+  }
+  function closeTour(){
+    if(state.cur < 0) return;
+    writeBack();
+    var w = state.ws || { players:[], teams:[] };
+    state.players = w.players; state.teams = w.teams;
+    state.seed = []; state.picks = {}; state.applied = null;
+    state.lastTour = state.cur; state.cur = -1; state.started = false; state.ws = null;
+  }
+
   function save(){
-    try{ localStorage.setItem(KEY, JSON.stringify({ players:state.players, teams:state.teams, nextP:state.nextP, started:state.started, view:state.view, seed:state.seed, picks:state.picks, applied:state.applied })); }catch(e){}
+    try{
+      var inTour = state.cur >= 0;
+      if(inTour) writeBack();
+      var w = inTour ? (state.ws || { players:[], teams:[] }) : { players:state.players, teams:state.teams };
+      localStorage.setItem(KEY, JSON.stringify({ v:2, players:w.players, teams:w.teams, nextP:state.nextP, tourNo:state.tourNo, played:state.played, tours:state.tours, cur:state.cur, view:state.view }));
+    }catch(e){}
   }
   function load(){
     try{
@@ -713,11 +764,38 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
         state.players = d.players;
         state.teams = Array.isArray(d.teams) ? d.teams : [];
         state.nextP = d.nextP || state.players.length + 1;
-        state.started = !!d.started;
+        state.played = Array.isArray(d.played) ? d.played.filter(function(x){ return typeof x === 'string'; }) : [];
+        state.tourNo = (d.tourNo >= 0) ? Math.floor(d.tourNo) : 0;
+        state.tours = [];
+        if(Array.isArray(d.tours)){
+          d.tours.forEach(function(t){
+            if(!t || !Array.isArray(t.players) || !Array.isArray(t.teams) || t.teams.length < 2) return;
+            state.tours.push({
+              no: t.no > 0 ? Math.floor(t.no) : state.tours.length + 1,
+              players: t.players, teams: t.teams,
+              seed: Array.isArray(t.seed) ? t.seed : [],
+              picks: (t.picks && typeof t.picks === 'object') ? t.picks : {},
+              applied: (t.applied && t.applied.deltas) ? t.applied : null
+            });
+          });
+        } else if(d.started && state.teams.length >= 2){
+          // хуучин хувилбарын өгөгдлийг шилжүүлнэ: явагдаж байсан тэмцээн №1 болно
+          state.tours.push({
+            no: 1, players: state.players, teams: state.teams,
+            seed: Array.isArray(d.seed) ? d.seed : [],
+            picks: (d.picks && typeof d.picks === 'object') ? d.picks : {},
+            applied: (d.applied && d.applied.deltas) ? d.applied : null
+          });
+          state.players.forEach(function(p){ var k = p.name.trim().toLowerCase(); if(state.played.indexOf(k) === -1) state.played.push(k); });
+          state.players = []; state.teams = [];
+        }
+        state.tours.forEach(function(t){ if(t.no > state.tourNo) state.tourNo = t.no; });
         state.view = (d.view === 'tour' || d.view === 'rank' || d.view === 'split') ? d.view : 'reg';
-        state.applied = (d.applied && d.applied.deltas) ? d.applied : null;
-        state.seed = Array.isArray(d.seed) ? d.seed : [];
-        state.picks = (d.picks && typeof d.picks === 'object') ? d.picks : {};
+        state.cur = -1; state.ws = null; state.started = false; state.seed = []; state.picks = {}; state.applied = null;
+        if(state.view === 'tour'){
+          if(state.tours.length) openTour((d.cur >= 0 && d.cur < state.tours.length) ? d.cur : 0);
+          else state.view = 'split';
+        }
       }
     }catch(e){}
   }
@@ -740,19 +818,25 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   function freeInRole(n){ return inRole(n).filter(function(p){ return p.team === null; }); }
   function roleOf(n){ return ROLES[n-1]; }
 
+  // Өмнөх тэмцээнд оролцсон хүмүүс дараагийн тэмцээнд орохгүй
+  function isPlayed(name){ return state.played.indexOf(String(name).trim().toLowerCase()) !== -1; }
+
   /* ---------- actions ---------- */
   function addNames(text, role){
     var names = text.split(/[\n,;]+/).map(function(s){ return s.trim(); }).filter(Boolean);
     if(!names.length){ toast('Нэр оруулаагүй байна'); return 0; }
-    var added=0, dupes=0;
+    var added=0, dupes=0, played=0;
     names.forEach(function(n){
+      if(isPlayed(n)){ played++; return; }
       if(state.players.some(function(p){ return p.name.toLowerCase() === n.toLowerCase(); })){ dupes++; return; }
       state.players.push({ id: state.nextP++, name:n, role:role, team:null }); added++;
+      rosterSet(n, role);
     });
-    names.forEach(function(n){ rosterSet(n, role); });
     saveRoster(); save(); render();
-    if(added && dupes) toast(added + ' хүнийг ' + role + '-р рольд бүртгэлээ, ' + dupes + ' давхардсан нэр алгаслаа');
+    var skip = (dupes ? dupes + ' давхардсан' : '') + (dupes && played ? ', ' : '') + (played ? played + ' өмнөх тэмцээнд оролцсон' : '');
+    if(added && skip) toast(added + ' хүнийг ' + role + '-р рольд бүртгэлээ, ' + skip + ' нэр алгаслаа');
     else if(added) toast(added + ' хүнийг ' + role + '-р рольд бүртгэлээ');
+    else if(played && !dupes) toast('Өмнөх тэмцээнд оролцсон тул дараагийн тэмцээнд бүртгэх боломжгүй');
     else toast('Бүгд аль хэдийн бүртгэлтэй');
     return added;
   }
@@ -1073,7 +1157,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   function addFromRoster(list){
     var added = 0;
     list.forEach(function(e){
-      if(playerByName(e.name)) return;
+      if(playerByName(e.name) || isPlayed(e.name)) return;
       state.players.push({ id: state.nextP++, name:e.name, role:e.role, team:null }); added++;
     });
     if(added){ save(); render(); toast(added + ' хүнийг хадгалсан рольд нь нэмлээ'); }
@@ -1250,9 +1334,32 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     var pp = ptsOf(p.name);
     var pill = makePill(pp, p.name, true);
     row.classList.add('pc-wrap');
+    var pts = document.createElement('span'); pts.className = 'pt-num';
+    pts.textContent = pp; pts.title = 'Ранкын оноо';
+
+    // Багийг шууд сонгож шилжүүлэх
+    var sel = document.createElement('select'); sel.className = 'mv-team';
+    sel.setAttribute('aria-label', p.name + ': баг сонгох');
+    var o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'сул — баг сонгох'; sel.appendChild(o0);
+    state.teams.forEach(function(t, k){
+      var o = document.createElement('option'); o.value = String(k); o.textContent = t.name; sel.appendChild(o);
+    });
+    sel.value = (p.team !== null && state.teams[p.team]) ? String(p.team) : '';
+    if(p.team !== null && state.teams[p.team]) sel.style.color = state.teams[p.team].color;
+    if(!state.teams.length){ sel.disabled = true; sel.title = 'Эхлээд баг үүсгэнэ үү (Санамсаргүй хуваах эсвэл Хоосон баг үүсгэх)'; }
+    else sel.title = 'Багт шууд шилжүүлэх';
+    sel.addEventListener('change', function(){
+      p.team = sel.value === '' ? null : Number(sel.value);
+      save(); render();
+      if(p.team !== null && state.teams[p.team]) toast(p.name + ' → ' + state.teams[p.team].name);
+    });
+    sel.addEventListener('focus', function(){ row.draggable = false; });
+    sel.addEventListener('blur', function(){ row.draggable = true; });
+    sel.addEventListener('mousedown', function(e){ e.stopPropagation(); });
+
     var meta = document.createElement('div'); meta.className = 'pc-meta';
-    meta.appendChild(pill); meta.appendChild(tag);
-    row.appendChild(av); row.appendChild(nm); row.appendChild(del); row.appendChild(meta);
+    meta.appendChild(pill); meta.appendChild(sel);
+    row.appendChild(av); row.appendChild(nm); row.appendChild(pts); row.appendChild(del); row.appendChild(meta);
     row.addEventListener('dragstart', function(e){
       row.classList.add('dragging');
       e.dataTransfer.setData('text/plain', String(p.id));
@@ -1452,7 +1559,12 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     return card;
   }
 
-  function setView(v){ state.view = v; save(); render(); window.scrollTo(0, 0); }
+  function setView(v){
+    if(v === 'tour'){
+      if(state.tours.length && state.cur < 0) openTour(state.lastTour < state.tours.length ? state.lastTour : 0);
+    } else closeTour();
+    state.view = v; save(); render(); window.scrollTo(0, 0);
+  }
 
   function shuffleSeed(n){
     var a = [], i, j, t;
@@ -1637,29 +1749,42 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     wrap.appendChild(root);
   }
 
-  function startTournament(){
-    if(state.teams.length < 2){ toast('Тэмцээнд дор хаяж 2 баг хэрэгтэй'); return; }
+  function canStart(){
+    if(state.teams.length < 2){ toast('Тэмцээнд дор хаяж 2 баг хэрэгтэй'); return false; }
     var empty = state.teams.some(function(t, ti){
       return !state.players.some(function(p){ return p.team === ti; });
     });
-    if(empty){ toast('Тоглогчгүй баг байна — хуваарилах эсвэл багийн тоог багасгана уу'); return; }
+    if(empty){ toast('Тоглогчгүй баг байна — хуваарилах эсвэл багийн тоог багасгана уу'); return false; }
     var st = sumsStatus();
-    if(st.bad){ toast('Тооны нүдэнд буруу утга байна — зөвхөн тоо бичнэ үү'); return; }
+    if(st.bad){ toast('Тооны нүдэнд буруу утга байна — зөвхөн тоо бичнэ үү'); return false; }
     if(!st.equal){
       toast('Багуудын тооны нийлбэр тэнцүү биш (' + st.sums.map(fmtNum).join(' / ') + ') — тэмцээн эхэлж болохгүй');
-      return;
+      return false;
     }
-    function go(){
+    return true;
+  }
+
+  // Шинэ тэмцээн үүсгэнэ: бүртгэлтэй хүмүүс тэмцээнд шилжиж, ажлын талбар чөлөөлөгдөнө.
+  // Ингэснээр эхний тэмцээн явж байхад шинэ хүмүүсийг бүртгээд дараагийн тэмцээнийг зэрэг эхлүүлж болно.
+  function startTournament(){
+    if(state.cur >= 0) return;
+    if(!canStart()) return;
+    var n = state.players.length;
+    confirmBox('Тэмцээн эхлүүлэх үү?', n + ' хүн шинэ тэмцээнд орно. Тэд дараагийн тэмцээнд бүртгэгдэх боломжгүй болно.', function(){
+      state.players.forEach(function(p){
+        var k = p.name.trim().toLowerCase();
+        if(state.played.indexOf(k) === -1) state.played.push(k);
+      });
       state.teams.forEach(function(t){ t.result = null; });
-      state.picks = {}; syncRanks();   // өмнөх тэмцээний оноог буцаана
-      state.seed = shuffleSeed(state.teams.length); state.picks = {}; state.applied = null;
-      state.started = true; state.view = 'tour';
+      var tour = { no: ++state.tourNo, players: state.players, teams: state.teams,
+                   seed: shuffleSeed(state.teams.length), picks: {}, applied: null };
+      state.tours.push(tour);
+      state.players = []; state.teams = [];   // ажлын талбар чөлөөлөгдөнө
+      openTour(state.tours.length - 1);
+      state.view = 'tour';
       save(); render(); window.scrollTo(0, 0);
-      toast('Сугалаа татагдаж, тэмцээн эхэллээ');
-    }
-    if(state.started){
-      confirmBox('Тэмцээнийг дахин эхлүүлэх үү?', 'Шинээр сугалаа татаж, өмнөх үр дүн арилна. Тэр үр дүнгээр авсан ранкын оноо мөн буцаагдана.', go);
-    } else go();
+      toast('Тэмцээн №' + tour.no + ' эхэллээ — шинэ хүмүүсээ бүртгээд дараагийн тэмцээнээ эхлүүлж болно');
+    });
   }
 
   function reshuffle(){
@@ -1669,12 +1794,44 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   }
 
   function endTournament(){
-    confirmBox('Тэмцээн дуусгах уу?', 'Шигшээ арилж, «Баг хуваах» хуудас руу буцна. Багууд болон ранкын авсан оноо хэвээр үлдэнэ.', function(){
-      state.teams.forEach(function(t){ t.result = null; });
-      state.started = false; state.view = 'split'; state.seed = []; state.picks = {}; state.applied = null;
+    if(state.cur < 0) return;
+    var no = state.tours[state.cur].no;
+    confirmBox('Тэмцээн №' + no + '-г дуусгах уу?', 'Энэ тэмцээн жагсаалтаас арилна. Ранкын авсан оноо хэвээр үлдэнэ. Оролцогчид дараагийн тэмцээнд орохгүй хэвээр байна.', function(){
+      var i = state.cur;
+      closeTour();
+      state.tours.splice(i, 1);
+      if(state.tours.length){ openTour(Math.min(i, state.tours.length - 1)); state.view = 'tour'; }
+      else state.view = 'split';
       save(); render(); window.scrollTo(0, 0);
-      toast('Тэмцээн дууслаа');
+      toast('Тэмцээн №' + no + ' дууслаа');
     });
+  }
+
+  // Тэмцээний хуудсан дээрх тоглогчийн мөр: нэр, оноо, тоо бичих нүд, багт шилжүүлэх сонголт
+  function tourRow(p, ti){
+    var row = memberRow(p, true, true);
+    var pts = document.createElement('span'); pts.className = 'pt-num';
+    pts.textContent = ptsOf(p.name); pts.title = 'Ранкын оноо';
+    var box = row.querySelector('.num-box');
+    row.insertBefore(pts, box);
+    if(state.teams.length > 1){
+      var sel = document.createElement('select'); sel.className = 'mv-sel';
+      sel.title = 'Өөр багт шилжүүлэх'; sel.setAttribute('aria-label', p.name + ': өөр багт шилжүүлэх');
+      var o0 = document.createElement('option'); o0.value = ''; o0.textContent = '⇄'; sel.appendChild(o0);
+      state.teams.forEach(function(t, k){
+        if(k === ti) return;
+        var o = document.createElement('option'); o.value = String(k); o.textContent = '→ ' + t.name; sel.appendChild(o);
+      });
+      sel.addEventListener('change', function(){
+        var to = Number(sel.value);
+        if(sel.value === '' || isNaN(to)) return;
+        if(teamMembers(ti).length <= 1){ sel.value = ''; toast('Багт дор хаяж 1 тоглогч үлдэх ёстой'); return; }
+        p.team = to; save(); render();
+        toast(p.name + ' → ' + state.teams[to].name);
+      });
+      row.appendChild(sel);
+    }
+    return row;
   }
 
   function tourCard(t, ti){
@@ -1697,7 +1854,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     var body = document.createElement('div'); body.className = 'role-list';
     ROLES.forEach(function(r){
       var mm = members.filter(function(m){ return m.role === r.n; });
-      if(mm.length) mm.forEach(function(p){ body.appendChild(memberRow(p, true, true)); });
+      if(mm.length) mm.forEach(function(p){ body.appendChild(tourRow(p, ti)); });
       else body.appendChild(slotEmpty(r));
     });
 
@@ -1797,13 +1954,29 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
       el.classList.toggle('active', v === x[1]);
       el.setAttribute('aria-selected', String(v === x[1]));
     });
-    document.getElementById('btnStartTour').textContent = state.started ? 'Тэмцээнийг дахин эхлүүлэх' : 'Тэмцээн эхлүүлэх';
-    document.getElementById('btnStartTour').disabled = state.teams.length < 2;
+    document.getElementById('btnStartTour').disabled = state.cur >= 0 || state.teams.length < 2;
+    document.getElementById('tourTitle').textContent = 'Тэмцээн' + (state.cur >= 0 ? ' №' + state.tours[state.cur].no : '');
+    var tabsBox = document.getElementById('tourTabs');
+    tabsBox.innerHTML = '';
+    tabsBox.hidden = !(v === 'tour' && state.tours.length);
+    state.tours.forEach(function(t, i){
+      var b = document.createElement('button'); b.type = 'button';
+      b.className = 'tour-tab' + (i === state.cur ? ' active' : '');
+      b.textContent = 'Тэмцээн №' + t.no;
+      var sm = document.createElement('small'); sm.textContent = t.teams.length + ' баг'; b.appendChild(sm);
+      b.addEventListener('click', function(){ openTour(i); save(); render(); window.scrollTo(0, 0); });
+      tabsBox.appendChild(b);
+    });
+    var addB = document.createElement('button'); addB.type = 'button'; addB.className = 'tour-tab add';
+    addB.textContent = '＋ Шинэ тэмцээн';
+    addB.title = 'Шинэ хүмүүсээ бүртгээд шинэ тэмцээн эхлүүлэх';
+    addB.addEventListener('click', function(){ setView('reg'); });
+    tabsBox.appendChild(addB);
   }
 
   var rosterQuery = '';
   function sortedRoster(){
-    return roster.slice().sort(function(a,b){ return a.role - b.role || a.name.localeCompare(b.name); });
+    return roster.filter(function(e){ return !isPlayed(e.name); }).sort(function(a,b){ return a.role - b.role || a.name.localeCompare(b.name); });
   }
   function filteredRoster(){
     var q = rosterQuery.trim().toLowerCase();
@@ -1816,9 +1989,10 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     var filtering = rosterQuery.trim() !== '';
     var sorted = filteredRoster();
     var free = sorted.filter(function(e){ return !playerByName(e.name); }).length;
-    document.getElementById('rosterInfo').textContent = filtering
+    var playedNote = state.played.length ? ' · ' + state.played.length + ' оролцсон (нуусан)' : '';
+    document.getElementById('rosterInfo').textContent = (filtering
       ? sorted.length + ' олдсон · ' + free + ' нэмэгдээгүй'
-      : roster.length + ' хадгалсан · ' + free + ' нэмэгдээгүй';
+      : sortedRoster().length + ' хадгалсан · ' + free + ' нэмэгдээгүй') + playedNote;
     var allBtn = document.getElementById('btnRosterAll');
     allBtn.textContent = filtering ? 'Олдсоныг нэмэх' : 'Бүгдийг нэмэх';
     allBtn.disabled = free < 1;
@@ -1950,8 +2124,9 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     });
   });
   document.getElementById('btnResetAll').addEventListener('click', function(){
-    confirmBox('Бүртгэлийг арилгах уу?', 'Бүртгэсэн хүмүүс, багууд болон тэмцээний үр дүн устана. Хадгалсан нэрс үлдэнэ.', function(){
-      state.players=[]; state.teams=[]; state.started=false; state.view='reg'; state.seed=[]; state.picks={}; state.applied=null; save(); render(); toast('Цэвэрлэгдлээ — хадгалсан нэрс үлдлээ');
+    confirmBox('Бүгдийг арилгах уу?', 'Бүртгэсэн хүмүүс, багууд болон явагдаж буй бүх тэмцээн устана. Тэмцээнд оролцогчдын нуусан жагсаалт цэвэрлэгдэж, тэмцээний дугаар шинээр эхэлнэ. Ранкын оноо болон хадгалсан нэрс үлдэнэ.', function(){
+      closeTour();
+      state.players=[]; state.teams=[]; state.tours=[]; state.lastTour=0; state.started=false; state.tourNo=0; state.played=[]; state.view='reg'; state.seed=[]; state.picks={}; state.applied=null; save(); render(); toast('Цэвэрлэгдлээ — хадгалсан нэрс үлдлээ');
     });
   });
 
