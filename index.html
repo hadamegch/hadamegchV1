@@ -185,6 +185,97 @@ body::before{
 .team-sum{ font-size:11.5px; font-weight:800; padding:4px 11px; border-radius:20px; white-space:nowrap; background:rgba(255,255,255,0.08); color:var(--text-1); }
 .team-sum.ok{ background:rgba(61,220,132,0.14); color:var(--green); }
 .team-sum.bad{ background:rgba(255,61,87,0.15); color:#ff7386; }
+.donate-wrap{ position:relative; }
+.btn-donate{
+  background:linear-gradient(135deg,#ffcb47,#ff9a3d); color:#241a05; border:none; font-weight:800;
+}
+.btn-donate:hover{ filter:brightness(1.06); }
+.donate-pop{
+  position:absolute; top:calc(100% + 8px); right:0; z-index:200; min-width:210px;
+  background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px;
+  box-shadow:0 16px 40px rgba(0,0,0,0.35); display:flex; flex-direction:column; gap:8px;
+}
+.donate-bank{ font-size:12.5px; font-weight:800; color:var(--text-2); text-align:center; letter-spacing:.3px; }
+.donate-acc{
+  display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;
+  font:inherit; font-size:14.5px; font-weight:800; letter-spacing:.5px; color:var(--text-0);
+  background:var(--bg); border:1px solid var(--line-2); border-radius:10px; padding:9px 12px; cursor:pointer;
+}
+.donate-acc:hover{ border-color:var(--green); }
+.donate-acc i{ font-style:normal; font-size:13px; opacity:.6; }
+.donate-acc.copied{ border-color:var(--green); color:var(--green); }
+.login-gate{
+  position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(1200px 600px at 50% -10%, rgba(122,92,255,0.18), transparent),var(--bg);
+  padding:20px;
+}
+.login-gate[hidden]{ display:none; }
+.login-card{
+  width:100%; max-width:340px; background:var(--surface); border:1px solid var(--line);
+  border-radius:18px; padding:28px 26px; display:flex; flex-direction:column; gap:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.35);
+}
+.login-card h1{ margin:0; font-family:var(--display); font-size:22px; font-weight:600; text-align:center; }
+.login-card h1 span{ color:var(--red); }
+.login-hint{ margin:0 0 4px; text-align:center; font-size:13px; color:var(--text-2); }
+.login-card label{ display:flex; flex-direction:column; gap:6px; font-size:12.5px; font-weight:700; color:var(--text-1); }
+.login-card input{
+  font:inherit; font-size:14px; padding:10px 12px; border-radius:10px; background:var(--bg);
+  border:1px solid var(--line-2); color:var(--text-0);
+}
+.login-card input:focus{ outline:none; border-color:var(--green); box-shadow:0 0 0 3px rgba(61,220,132,0.16); }
+.login-error{ font-size:12.5px; color:#ff7386; text-align:center; }
+.login-btn{ width:100%; justify-content:center; margin-top:4px; }
+.top-ticker{
+  position:relative; overflow:hidden; background:var(--surface-3); border-bottom:1px solid var(--line);
+  height:34px; display:flex; align-items:center;
+}
+.top-ticker-track{
+  display:flex; align-items:center; gap:28px; white-space:nowrap; padding-left:100%;
+  animation:ticker-scroll 34s linear infinite;
+  will-change:transform;
+}
+.top-ticker:hover .top-ticker-track{ animation-play-state:paused; }
+@keyframes ticker-scroll{ from{ transform:translateX(0); } to{ transform:translateX(-100%); } }
+.tk-item{ display:inline-flex; align-items:center; gap:7px; font-size:12.5px; }
+.tk-item .tk-place{ font-weight:800; color:var(--text-2); }
+.tk-item.p1 .tk-place{ color:#ffcb47; } .tk-item.p2 .tk-place{ color:#c9d2e0; } .tk-item.p3 .tk-place{ color:#d99a5b; }
+.tk-item .tk-name{ font-weight:700; color:var(--text-0); }
+.tk-item .tk-tier{ font-weight:700; }
+.tk-item .tk-pts{ font-weight:800; color:var(--green); }
+.tk-dot{ opacity:.35; }
+.top-ticker-empty{ font-size:12.5px; color:var(--text-2); padding-left:16px; }
+.top-list{ display:flex; flex-direction:column; gap:6px; }
+.top-row{ display:flex; align-items:center; gap:10px; padding:7px 10px; border-radius:9px; background:var(--surface-3); }
+.top-row .tr-place{ width:22px; flex-shrink:0; text-align:center; font-weight:800; font-size:12.5px; color:var(--text-2); }
+.top-row.p1 .tr-place{ color:#ffcb47; } .top-row.p2 .tr-place{ color:#c9d2e0; } .top-row.p3 .tr-place{ color:#d99a5b; }
+.top-row .tr-name{ font-weight:700; font-size:13.5px; flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.top-row .tr-tier{ font-size:11px; font-weight:700; }
+.top-row .tr-pts{ font-weight:800; font-size:13px; flex-shrink:0; }
+.hist-card{ background:var(--surface-3); border:1px solid var(--line); border-radius:14px; margin-bottom:12px; overflow:hidden; }
+.hist-card > summary{ list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.hist-card > summary::-webkit-details-marker{ display:none; }
+.hist-card > summary::before{ content:'▸'; color:var(--text-2); transition:transform .15s ease; }
+.hist-card[open] > summary::before{ transform:rotate(90deg); }
+.hist-title{ font-weight:800; font-size:15px; }
+.hist-date{ font-size:12px; color:var(--text-2); }
+.hist-champ{ margin-left:auto; font-size:12.5px; font-weight:800; padding:4px 11px; border-radius:20px; background:rgba(61,220,132,0.14); color:var(--green); }
+.hist-champ.none{ background:rgba(255,255,255,0.08); color:var(--text-1); }
+.hist-body{ padding:4px 16px 16px; border-top:1px solid var(--line); }
+.hist-sub{ margin:14px 0 8px; font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--text-2); }
+.hist-teams{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+.hist-team{ background:var(--bg); border:1px solid var(--line); border-radius:11px; padding:10px 12px; }
+.hist-team h4{ margin:0 0 6px; font-size:13.5px; display:flex; align-items:center; gap:8px; }
+.hist-team h4 small{ font-size:11px; font-weight:700; opacity:.8; }
+.hist-team ul{ list-style:none; margin:0; padding:0; font-size:13px; }
+.hist-team li{ display:flex; gap:8px; padding:2px 0; }
+.hist-team li b{ width:14px; color:var(--text-2); }
+.hist-team li em{ margin-left:auto; font-style:normal; font-weight:800; color:var(--text-1); }
+.hist-round{ margin-bottom:8px; font-size:13px; }
+.hist-round strong{ display:block; font-size:12px; color:var(--text-2); margin-bottom:3px; }
+.hist-match{ padding:2px 0; color:var(--text-1); }
+.hist-match .w{ color:var(--green); font-weight:800; }
+.hist-actions{ margin-top:14px; display:flex; justify-content:flex-end; }
 .mv-team{
   flex:0 1 auto; max-width:150px; height:26px; padding:0 6px; cursor:pointer;
   background:var(--bg); color:var(--text-1); font-family:inherit; font-size:12px; font-weight:700;
@@ -509,6 +600,21 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
 </head>
 <body>
 
+<div class="login-gate" id="loginGate">
+  <form class="login-card" id="loginForm" autocomplete="off">
+    <h1><span>85</span>-ийн лод</h1>
+    <p class="login-hint">Үргэлжлүүлэхийн тулд нэвтэрнэ үү</p>
+    <label>Нэвтрэх нэр
+      <input type="text" id="loginUser" autocomplete="username" required>
+    </label>
+    <label>Нууц үг
+      <input type="password" id="loginPass" autocomplete="current-password" required>
+    </label>
+    <div class="login-error" id="loginError" hidden>Нэвтрэх нэр эсвэл нууц үг буруу байна</div>
+    <button type="submit" class="btn btn-primary login-btn">Нэвтрэх</button>
+  </form>
+</div>
+
 <header class="topbar">
   <div class="brand">
     <div class="brand-mark" aria-hidden="true">
@@ -524,12 +630,29 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     <button class="tab" id="tabSplit" role="tab" aria-selected="false" type="button">Баг хуваах</button>
     <button class="tab" id="tabTour" role="tab" aria-selected="false" type="button">Тэмцээн</button>
     <button class="tab" id="tabRank" role="tab" aria-selected="false" type="button">Ранк</button>
+    <button class="tab" id="tabHist" role="tab" aria-selected="false" type="button">Түүх</button>
   </nav>
   <div class="topbar-actions">
     <button class="btn btn-ghost" id="btnCopy">Багуудыг хуулах</button>
+    <div class="donate-wrap">
+      <button class="btn btn-donate" id="btnDonate" type="button" aria-haspopup="true" aria-expanded="false">Данс</button>
+      <div class="donate-pop" id="donatePop" hidden>
+        <div class="donate-bank">Хаан банк</div>
+        <button class="donate-acc" id="donateAcc1" type="button" title="Хуулах">
+          <span>05000500</span><i>⧉</i>
+        </button>
+        <button class="donate-acc" id="donateAcc2" type="button" title="Хуулах">
+          <span>5246365002</span><i>⧉</i>
+        </button>
+      </div>
+    </div>
     <button class="btn btn-danger-ghost" id="btnResetAll">Бүртгэл арилгах</button>
   </div>
 </header>
+
+<div class="top-ticker" id="topTicker" aria-label="Топ тоглогчид">
+  <div class="top-ticker-track" id="topTickerTrack"></div>
+</div>
 
 <main class="wrap" id="viewReg">
 
@@ -636,6 +759,17 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   </section>
 </main>
 
+<main class="wrap" id="viewHist" hidden>
+  <section class="panel glass">
+    <div class="panel-head">
+      <h2>Түүх</h2>
+      <span class="hint">«Тэмцээн дуусгах» дарсан тэмцээнүүд энд хадгалагдана</span>
+      <button class="btn btn-danger-ghost" id="btnHistClear">Түүхийг арилгах</button>
+    </div>
+    <div id="histList"></div>
+  </section>
+</main>
+
 <main class="wrap" id="viewRank" hidden>
   <section class="panel glass">
     <div class="panel-head">
@@ -671,6 +805,30 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
 (function(){
   "use strict";
 
+  /* ---------- нэвтрэх хаалт ---------- */
+  var LOGIN_USER = 'hadamegch';
+  var LOGIN_PASS = 'hadamegchbaldan';
+  var LOGIN_KEY = 'role5teams_authed_v1';
+  (function loginGate(){
+    var gate = document.getElementById('loginGate');
+    var form = document.getElementById('loginForm');
+    var err = document.getElementById('loginError');
+    if(localStorage.getItem(LOGIN_KEY) === '1'){ gate.hidden = true; return; }
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var u = document.getElementById('loginUser').value.trim();
+      var p = document.getElementById('loginPass').value;
+      if(u === LOGIN_USER && p === LOGIN_PASS){
+        try{ localStorage.setItem(LOGIN_KEY, '1'); }catch(ex){}
+        gate.hidden = true;
+      } else {
+        err.hidden = false;
+        document.getElementById('loginPass').value = '';
+        document.getElementById('loginPass').focus();
+      }
+    });
+  })();
+
   var ROLES = [
     { n:1, label:'1', color:'#ff2f4b' },
     { n:2, label:'2', color:'#7a5cff' },
@@ -698,7 +856,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   var KEY = 'role5teams:v2';
 
   var RKEY = 'role5teams:roster:v1';
-  var state = { players: [], teams: [], pickRole: 1, nextP: 1, started: false, tourNo: 0, played: [], tours: [], cur: -1, lastTour: 0, ws: null, view: 'reg', seed: [], picks: {}, applied: null };
+  var state = { players: [], teams: [], pickRole: 1, nextP: 1, started: false, tourNo: 0, played: [], tours: [], history: [], cur: -1, lastTour: 0, ws: null, view: 'reg', seed: [], picks: {}, applied: null };
   var roster = [];   // {name, role} — тэмцээн арилсан ч үлдэнэ
 
   function saveRoster(){
@@ -753,7 +911,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
       var inTour = state.cur >= 0;
       if(inTour) writeBack();
       var w = inTour ? (state.ws || { players:[], teams:[] }) : { players:state.players, teams:state.teams };
-      localStorage.setItem(KEY, JSON.stringify({ v:2, players:w.players, teams:w.teams, nextP:state.nextP, tourNo:state.tourNo, played:state.played, tours:state.tours, cur:state.cur, view:state.view }));
+      localStorage.setItem(KEY, JSON.stringify({ v:2, players:w.players, teams:w.teams, nextP:state.nextP, tourNo:state.tourNo, played:state.played, tours:state.tours, history:state.history, cur:state.cur, view:state.view }));
     }catch(e){}
   }
   function load(){
@@ -766,6 +924,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
         state.nextP = d.nextP || state.players.length + 1;
         state.played = Array.isArray(d.played) ? d.played.filter(function(x){ return typeof x === 'string'; }) : [];
         state.tourNo = (d.tourNo >= 0) ? Math.floor(d.tourNo) : 0;
+        state.history = Array.isArray(d.history) ? d.history.filter(function(h){ return h && Array.isArray(h.teams); }) : [];
         state.tours = [];
         if(Array.isArray(d.tours)){
           d.tours.forEach(function(t){
@@ -790,7 +949,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
           state.players = []; state.teams = [];
         }
         state.tours.forEach(function(t){ if(t.no > state.tourNo) state.tourNo = t.no; });
-        state.view = (d.view === 'tour' || d.view === 'rank' || d.view === 'split') ? d.view : 'reg';
+        state.view = (d.view === 'tour' || d.view === 'rank' || d.view === 'split' || d.view === 'hist') ? d.view : 'reg';
         state.cur = -1; state.ws = null; state.started = false; state.seed = []; state.picks = {}; state.applied = null;
         if(state.view === 'tour'){
           if(state.tours.length) openTour((d.cur >= 0 && d.cur < state.tours.length) ? d.cur : 0);
@@ -825,18 +984,15 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   function addNames(text, role){
     var names = text.split(/[\n,;]+/).map(function(s){ return s.trim(); }).filter(Boolean);
     if(!names.length){ toast('Нэр оруулаагүй байна'); return 0; }
-    var added=0, dupes=0, played=0;
+    var added=0, dupes=0;
     names.forEach(function(n){
-      if(isPlayed(n)){ played++; return; }
       if(state.players.some(function(p){ return p.name.toLowerCase() === n.toLowerCase(); })){ dupes++; return; }
       state.players.push({ id: state.nextP++, name:n, role:role, team:null }); added++;
       rosterSet(n, role);
     });
     saveRoster(); save(); render();
-    var skip = (dupes ? dupes + ' давхардсан' : '') + (dupes && played ? ', ' : '') + (played ? played + ' өмнөх тэмцээнд оролцсон' : '');
-    if(added && skip) toast(added + ' хүнийг ' + role + '-р рольд бүртгэлээ, ' + skip + ' нэр алгаслаа');
+    if(added && dupes) toast(added + ' хүнийг ' + role + '-р рольд бүртгэлээ, ' + dupes + ' давхардсан нэр алгаслаа');
     else if(added) toast(added + ' хүнийг ' + role + '-р рольд бүртгэлээ');
-    else if(played && !dupes) toast('Өмнөх тэмцээнд оролцсон тул дараагийн тэмцээнд бүртгэх боломжгүй');
     else toast('Бүгд аль хэдийн бүртгэлтэй');
     return added;
   }
@@ -1042,6 +1198,49 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     saveRanks(); render();
   }
 
+  function topRankList(limit){
+    var map = {};
+    roster.forEach(function(e){ map[e.name.toLowerCase()] = e.name; });
+    Object.keys(ranks).forEach(function(k){ if(!map[k]) map[k] = ranks[k].name; });
+    state.players.forEach(function(p){ map[p.name.toLowerCase()] = p.name; });
+    return Object.keys(map).map(function(k){
+      var rec = ranks[k] || { pts:START_PTS };
+      return { name:map[k], pts:rec.pts };
+    }).sort(function(a,b){ return b.pts - a.pts || a.name.localeCompare(b.name); }).slice(0, limit || 10);
+  }
+  var lastTickerKey = '';
+  function buildTickerItem(x, i){
+    var t = tierOf(x.pts);
+    var it = document.createElement('span'); it.className = 'tk-item' + (i < 3 ? ' p' + (i+1) : '');
+    var pl = document.createElement('span'); pl.className = 'tk-place'; pl.textContent = '#' + (i+1);
+    var nm = document.createElement('span'); nm.className = 'tk-name'; nm.textContent = x.name;
+    var tr = document.createElement('span'); tr.className = 'tk-tier'; tr.textContent = t.label; tr.style.color = t.color;
+    var pt = document.createElement('span'); pt.className = 'tk-pts'; pt.textContent = x.pts;
+    it.appendChild(pl); it.appendChild(nm); it.appendChild(tr); it.appendChild(pt);
+    return it;
+  }
+  function renderTopTicker(){
+    var track = document.getElementById('topTickerTrack');
+    if(!track) return;
+    var list = topRankList(10);
+    var key = list.map(function(x){ return x.name + ':' + x.pts; }).join('|');
+    if(key === lastTickerKey) return;   // өгөгдөл өөрчлөгдөөгүй бол урсгалыг таслахгүй
+    lastTickerKey = key;
+    track.innerHTML = '';
+    if(!list.length){
+      var em = document.createElement('span'); em.className = 'top-ticker-empty'; em.textContent = 'Жагсаалт хоосон — тоглогч бүртгэвэл энд гарна';
+      track.appendChild(em); return;
+    }
+    // хоёр удаа давхардуулж тавьснаар зогсолтгүй урсана
+    for(var copy = 0; copy < 2; copy++){
+      list.forEach(function(x, i){
+        track.appendChild(buildTickerItem(x, i));
+        var dot = document.createElement('span'); dot.className = 'tk-dot'; dot.textContent = '•';
+        track.appendChild(dot);
+      });
+    }
+  }
+
   function renderRank(){
     // тайлбар
     var lg = document.getElementById('rankLegend');
@@ -1157,7 +1356,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   function addFromRoster(list){
     var added = 0;
     list.forEach(function(e){
-      if(playerByName(e.name) || isPlayed(e.name)) return;
+      if(playerByName(e.name)) return;
       state.players.push({ id: state.nextP++, name:e.name, role:e.role, team:null }); added++;
     });
     if(added){ save(); render(); toast(added + ' хүнийг хадгалсан рольд нь нэмлээ'); }
@@ -1770,11 +1969,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     if(state.cur >= 0) return;
     if(!canStart()) return;
     var n = state.players.length;
-    confirmBox('Тэмцээн эхлүүлэх үү?', n + ' хүн шинэ тэмцээнд орно. Тэд дараагийн тэмцээнд бүртгэгдэх боломжгүй болно.', function(){
-      state.players.forEach(function(p){
-        var k = p.name.trim().toLowerCase();
-        if(state.played.indexOf(k) === -1) state.played.push(k);
-      });
+    confirmBox('Тэмцээн эхлүүлэх үү?', n + ' хүн шинэ тэмцээнд орно.', function(){
       state.teams.forEach(function(t){ t.result = null; });
       var tour = { no: ++state.tourNo, players: state.players, teams: state.teams,
                    seed: shuffleSeed(state.teams.length), picks: {}, applied: null };
@@ -1793,17 +1988,122 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     save(); render(); toast('Сугалаа дахин татагдлаа');
   }
 
+  // Дууссан тэмцээний бүрэн хуулбар (баг, тоглогч, шигшээний үр дүн) — түүхэнд хадгална
+  function snapshotTour(no){
+    var bk = buildBracket();
+    var nm = function(i){ return (i === null || i === undefined) ? null : state.teams[i].name; };
+    return {
+      no: no, endedAt: new Date().toISOString(),
+      finished: bk.champion !== undefined,
+      champion: bk.champion !== undefined ? state.teams[bk.champion].name : null,
+      teams: state.teams.map(function(t, ti){
+        return { name:t.name, color:t.color, result:t.result || null,
+          players: teamMembers(ti).map(function(p){
+            return { name:p.name, role:p.role, num:(p.num === undefined || p.num === null) ? '' : String(p.num) };
+          }) };
+      }),
+      rounds: bk.rounds.map(function(rd, r){
+        return { label: roundLabel(r, bk.R), matches: rd.map(function(mt){
+          return { a:nm(mt.a), b:nm(mt.b), w:nm(mt.w), bye:!!mt.bye };
+        }) };
+      })
+    };
+  }
+
   function endTournament(){
     if(state.cur < 0) return;
     var no = state.tours[state.cur].no;
-    confirmBox('Тэмцээн №' + no + '-г дуусгах уу?', 'Энэ тэмцээн жагсаалтаас арилна. Ранкын авсан оноо хэвээр үлдэнэ. Оролцогчид дараагийн тэмцээнд орохгүй хэвээр байна.', function(){
+    confirmBox('Тэмцээн №' + no + '-г дуусгах уу?', 'Тэмцээн «Түүх» цэсэнд хадгалагдаж, энд жагсаалтаас арилна. Ранкын оноо хэвээр үлдэнэ. Оролцогчид дараагийн тэмцээнд орохгүй хэвээр байна.', function(){
       var i = state.cur;
+      state.history.unshift(snapshotTour(no));
+      if(state.history.length > 300) state.history.length = 300;
       closeTour();
       state.tours.splice(i, 1);
       if(state.tours.length){ openTour(Math.min(i, state.tours.length - 1)); state.view = 'tour'; }
-      else state.view = 'split';
+      else state.view = 'hist';
       save(); render(); window.scrollTo(0, 0);
-      toast('Тэмцээн №' + no + ' дууслаа');
+      toast('Тэмцээн №' + no + ' түүхэнд хадгалагдлаа');
+    });
+  }
+
+  function fmtDate(iso){
+    var d = new Date(iso); if(isNaN(d)) return '';
+    var p = function(n){ return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  function renderHistory(){
+    var box = document.getElementById('histList');
+    box.innerHTML = '';
+    document.getElementById('btnHistClear').hidden = !state.history.length;
+    if(!state.history.length){
+      var em = document.createElement('div'); em.className = 'empty-msg';
+      em.textContent = 'Дууссан тэмцээн алга. «Тэмцээн» хуудсан дээр «Тэмцээн дуусгах» дарахад энд хадгалагдана.';
+      box.appendChild(em); return;
+    }
+    state.history.forEach(function(h, hi){
+      var det = document.createElement('details'); det.className = 'hist-card';
+      var sum = document.createElement('summary');
+      var t1 = document.createElement('span'); t1.className = 'hist-title'; t1.textContent = 'Тэмцээн №' + h.no;
+      var t2 = document.createElement('span'); t2.className = 'hist-date'; t2.textContent = fmtDate(h.endedAt);
+      var t3 = document.createElement('span'); t3.className = 'hist-champ' + (h.champion ? '' : ' none');
+      t3.textContent = h.champion ? 'Аварга: ' + h.champion : 'Дуусаагүй';
+      sum.appendChild(t1); sum.appendChild(t2); sum.appendChild(t3);
+      det.appendChild(sum);
+
+      var body = document.createElement('div'); body.className = 'hist-body';
+      var h1 = document.createElement('div'); h1.className = 'hist-sub'; h1.textContent = 'Багууд';
+      body.appendChild(h1);
+      var grid = document.createElement('div'); grid.className = 'hist-teams';
+      h.teams.forEach(function(t){
+        var card = document.createElement('div'); card.className = 'hist-team';
+        var hd = document.createElement('h4'); hd.style.color = t.color || 'inherit';
+        var tn = document.createElement('span'); tn.textContent = t.name; hd.appendChild(tn);
+        var st = document.createElement('small');
+        st.textContent = t.result === 'win' ? 'Аварга' : t.result === 'lose' ? 'Хасагдсан' : '';
+        hd.appendChild(st); card.appendChild(hd);
+        var ul = document.createElement('ul');
+        (t.players || []).forEach(function(p){
+          var li = document.createElement('li');
+          var rb = document.createElement('b'); rb.textContent = p.role; rb.title = p.role + '-р роль';
+          var pn = document.createElement('span'); pn.textContent = p.name;
+          li.appendChild(rb); li.appendChild(pn);
+          if(p.num !== undefined && p.num !== ''){ var pe = document.createElement('em'); pe.textContent = p.num; li.appendChild(pe); }
+          ul.appendChild(li);
+        });
+        card.appendChild(ul); grid.appendChild(card);
+      });
+      body.appendChild(grid);
+
+      var h2 = document.createElement('div'); h2.className = 'hist-sub'; h2.textContent = 'Шигшээний үр дүн';
+      body.appendChild(h2);
+      (h.rounds || []).forEach(function(rd){
+        var rw = document.createElement('div'); rw.className = 'hist-round';
+        var rh = document.createElement('strong'); rh.textContent = rd.label; rw.appendChild(rh);
+        rd.matches.forEach(function(mt){
+          var ln = document.createElement('div'); ln.className = 'hist-match';
+          if(mt.bye){
+            ln.textContent = (mt.a || mt.b || '—') + ' — чөлөөтэй давсан';
+          } else {
+            var A = mt.a || '?', B = mt.b || '?';
+            ln.appendChild(document.createTextNode(A + ' vs ' + B));
+            if(mt.w){ var w = document.createElement('span'); w.className = 'w'; w.textContent = ' → ' + mt.w; ln.appendChild(w); }
+          }
+          rw.appendChild(ln);
+        });
+        body.appendChild(rw);
+      });
+
+      var act = document.createElement('div'); act.className = 'hist-actions';
+      var del = document.createElement('button'); del.type = 'button'; del.className = 'btn btn-danger-ghost';
+      del.textContent = 'Энэ тэмцээнийг устгах';
+      del.addEventListener('click', function(){
+        confirmBox('Түүхээс устгах уу?', 'Тэмцээн №' + h.no + '-ийн түүх устна. Ранкын оноо өөрчлөгдөхгүй.', function(){
+          state.history.splice(hi, 1); save(); render(); toast('Түүхээс устгагдлаа');
+        });
+      });
+      act.appendChild(del); body.appendChild(act);
+      det.appendChild(body); box.appendChild(det);
     });
   }
 
@@ -1949,7 +2249,8 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     document.getElementById('viewSplit').hidden = v !== 'split';
     document.getElementById('viewTour').hidden = v !== 'tour';
     document.getElementById('viewRank').hidden = v !== 'rank';
-    [['tabReg','reg'],['tabSplit','split'],['tabTour','tour'],['tabRank','rank']].forEach(function(x){
+    document.getElementById('viewHist').hidden = v !== 'hist';
+    [['tabReg','reg'],['tabSplit','split'],['tabTour','tour'],['tabRank','rank'],['tabHist','hist']].forEach(function(x){
       var el = document.getElementById(x[0]);
       el.classList.toggle('active', v === x[1]);
       el.setAttribute('aria-selected', String(v === x[1]));
@@ -1972,11 +2273,12 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     addB.title = 'Шинэ хүмүүсээ бүртгээд шинэ тэмцээн эхлүүлэх';
     addB.addEventListener('click', function(){ setView('reg'); });
     tabsBox.appendChild(addB);
+    renderHistory();
   }
 
   var rosterQuery = '';
   function sortedRoster(){
-    return roster.filter(function(e){ return !isPlayed(e.name); }).sort(function(a,b){ return a.role - b.role || a.name.localeCompare(b.name); });
+    return roster.slice().sort(function(a,b){ return a.role - b.role || a.name.localeCompare(b.name); });
   }
   function filteredRoster(){
     var q = rosterQuery.trim().toLowerCase();
@@ -1989,10 +2291,9 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     var filtering = rosterQuery.trim() !== '';
     var sorted = filteredRoster();
     var free = sorted.filter(function(e){ return !playerByName(e.name); }).length;
-    var playedNote = state.played.length ? ' · ' + state.played.length + ' оролцсон (нуусан)' : '';
-    document.getElementById('rosterInfo').textContent = (filtering
+    document.getElementById('rosterInfo').textContent = filtering
       ? sorted.length + ' олдсон · ' + free + ' нэмэгдээгүй'
-      : sortedRoster().length + ' хадгалсан · ' + free + ' нэмэгдээгүй') + playedNote;
+      : sortedRoster().length + ' хадгалсан · ' + free + ' нэмэгдээгүй';
     var allBtn = document.getElementById('btnRosterAll');
     allBtn.textContent = filtering ? 'Олдсоныг нэмэх' : 'Бүгдийг нэмэх';
     allBtn.disabled = free < 1;
@@ -2047,6 +2348,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     renderRegSummary();
     renderTour();
     renderRank();
+    renderTopTicker();
     renderRoster();
 
     // рольын самбар
@@ -2094,6 +2396,12 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   document.getElementById('btnTourEnd').addEventListener('click', endTournament);
   document.getElementById('btnReshuffle').addEventListener('click', reshuffle);
   document.getElementById('tabRank').addEventListener('click', function(){ setView('rank'); });
+  document.getElementById('tabHist').addEventListener('click', function(){ setView('hist'); });
+  document.getElementById('btnHistClear').addEventListener('click', function(){
+    confirmBox('Түүхийг арилгах уу?', 'Хадгалагдсан бүх дууссан тэмцээний түүх устна. Ранкын оноо өөрчлөгдөхгүй.', function(){
+      state.history = []; save(); render(); toast('Түүх арилгагдлаа');
+    });
+  });
   var rankSearch = document.getElementById('rankSearch');
   rankSearch.addEventListener('input', function(){ rankQuery = rankSearch.value; renderRank(); });
   document.getElementById('btnRankReset').addEventListener('click', function(){
@@ -2124,11 +2432,42 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
     });
   });
   document.getElementById('btnResetAll').addEventListener('click', function(){
-    confirmBox('Бүгдийг арилгах уу?', 'Бүртгэсэн хүмүүс, багууд болон явагдаж буй бүх тэмцээн устана. Тэмцээнд оролцогчдын нуусан жагсаалт цэвэрлэгдэж, тэмцээний дугаар шинээр эхэлнэ. Ранкын оноо болон хадгалсан нэрс үлдэнэ.', function(){
+    confirmBox('Бүгдийг арилгах уу?', 'Бүртгэсэн хүмүүс, багууд болон явагдаж буй бүх тэмцээн устана. Тэмцээнд оролцогчдын нуусан жагсаалт цэвэрлэгдэж, тэмцээний дугаар шинээр эхэлнэ. Ранкын оноо, тэмцээний түүх болон хадгалсан нэрс үлдэнэ.', function(){
       closeTour();
       state.players=[]; state.teams=[]; state.tours=[]; state.lastTour=0; state.started=false; state.tourNo=0; state.played=[]; state.view='reg'; state.seed=[]; state.picks={}; state.applied=null; save(); render(); toast('Цэвэрлэгдлээ — хадгалсан нэрс үлдлээ');
     });
   });
+
+  /* ---------- дэмжих (данс харуулах) ---------- */
+  (function donatePopover(){
+    var btn = document.getElementById('btnDonate');
+    var pop = document.getElementById('donatePop');
+    if(!btn || !pop) return;
+    function close(){ pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    function open(){ pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); }
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(pop.hidden) open(); else close();
+    });
+    document.addEventListener('click', function(e){
+      if(!pop.hidden && !pop.contains(e.target) && e.target !== btn) close();
+    });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+    [document.getElementById('donateAcc1'), document.getElementById('donateAcc2')].forEach(function(b){
+      if(!b) return;
+      b.addEventListener('click', function(){
+        var txt = b.querySelector('span').textContent;
+        var done = function(){
+          b.classList.add('copied');
+          toast('Хуулагдлаа: ' + txt);
+          setTimeout(function(){ b.classList.remove('copied'); }, 1200);
+        };
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(txt).then(done).catch(done);
+        } else done();
+      });
+    });
+  })();
 
   loadRoster();
   loadRanks();
