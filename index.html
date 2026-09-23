@@ -204,6 +204,14 @@ body::before{
 .donate-acc:hover{ border-color:var(--green); }
 .donate-acc i{ font-style:normal; font-size:13px; opacity:.6; }
 .donate-acc.copied{ border-color:var(--green); color:var(--green); }
+.discord-pop{ min-width:260px; }
+.discord-input{
+  font:inherit; font-size:12.5px; padding:9px 10px; border-radius:9px; background:var(--bg);
+  border:1px solid var(--line-2); color:var(--text-0); width:100%; box-sizing:border-box;
+}
+.discord-input:focus{ outline:none; border-color:var(--green); }
+.discord-check{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--text-1); cursor:pointer; }
+.discord-save, .discord-test{ width:100%; justify-content:center; font-size:12.5px; padding:8px; }
 .login-gate{
   position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center;
   background:radial-gradient(1200px 600px at 50% -10%, rgba(122,92,255,0.18), transparent),var(--bg);
@@ -596,6 +604,254 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   .btn{ font-size:12.5px; padding:9px 13px; }
   .score-items{ gap:18px; }
 }
+
+/* ============================================================
+   NEON ESPORTS THEME — override layer (structure/JS unchanged)
+   ============================================================ */
+:root{
+  --bg:#06050c;
+  --surface:#0f0c1c;
+  --surface-2:#161129;
+  --surface-3:#1f1838;
+  --line:rgba(120,200,255,0.11);
+  --line-2:rgba(150,225,255,0.24);
+  --text-0:#eef2ff;
+  --text-1:#b6bfe0;
+  --text-2:#7c85b0;
+  --red:#ff2d6b;          /* primary + lose */
+  --green:#22ff9d;        /* win */
+  --yellow:#ffcf3d;
+  --neon-cyan:#22e7ff;
+  --neon-purple:#a86bff;
+  --neon-mag:#ff2d8f;
+  --neon-gold:#ffcf3d;
+}
+
+/* ---------- арын орчин: сүлжээ + неон гэрэл + сканлайн ---------- */
+body::after{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 8% -8%, rgba(255,45,143,0.20), transparent 60%),
+    radial-gradient(900px 560px at 100% 0%, rgba(34,231,255,0.16), transparent 62%),
+    radial-gradient(1000px 700px at 50% 120%, rgba(168,107,255,0.18), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(34,231,255,0.045) 0 1px, transparent 1px 42px),
+    repeating-linear-gradient(90deg, rgba(34,231,255,0.045) 0 1px, transparent 1px 42px);
+}
+::selection{ background:var(--neon-cyan); color:#04121a; }
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#2b2350,#1a1430);
+  border:1px solid rgba(34,231,255,0.25);
+  box-shadow:0 0 10px rgba(34,231,255,0.25) inset;
+}
+::-webkit-scrollbar-thumb:hover{ border-color:rgba(255,45,143,0.5); }
+
+/* ---------- шилэн самбар + HUD өнцөг ---------- */
+.glass{
+  background:
+    linear-gradient(180deg, rgba(30,24,54,0.78), rgba(14,11,26,0.72));
+  border:1px solid rgba(120,200,255,0.14);
+  box-shadow:
+    0 0 0 1px rgba(255,45,143,0.05),
+    0 24px 60px -30px rgba(0,0,0,0.9),
+    0 0 40px -22px rgba(34,231,255,0.5);
+}
+.panel{ position:relative; }
+.panel::before,
+.panel::after{
+  content:''; position:absolute; width:24px; height:24px; pointer-events:none; opacity:.6;
+}
+.panel::before{
+  top:9px; left:9px;
+  border-top:2px solid var(--neon-cyan); border-left:2px solid var(--neon-cyan);
+  filter:drop-shadow(0 0 6px rgba(34,231,255,0.85));
+}
+.panel::after{
+  bottom:9px; right:9px;
+  border-bottom:2px solid var(--neon-mag); border-right:2px solid var(--neon-mag);
+  filter:drop-shadow(0 0 6px rgba(255,45,143,0.8));
+}
+
+/* ---------- топбар, брэнд ---------- */
+.topbar{
+  background:linear-gradient(180deg, rgba(8,6,16,0.86), rgba(8,6,16,0.6));
+  border-bottom:1px solid rgba(34,231,255,0.22);
+  box-shadow:0 10px 34px -22px rgba(34,231,255,0.9), 0 1px 0 rgba(255,45,143,0.25);
+}
+.brand-text h1{ text-shadow:0 0 22px rgba(34,231,255,0.35); }
+.brand-text h1 span{
+  color:var(--neon-mag);
+  text-shadow:0 0 14px rgba(255,45,143,0.9), 0 0 34px rgba(255,45,143,0.5);
+}
+.brand-mark i{ box-shadow:0 0 12px var(--c), 0 0 26px color-mix(in srgb, var(--c) 55%, transparent); }
+
+/* ---------- таб ---------- */
+.tabs{
+  background:linear-gradient(180deg, rgba(22,17,41,0.9), rgba(12,9,24,0.9));
+  border:1px solid rgba(120,200,255,0.16);
+  box-shadow:0 0 24px -14px rgba(34,231,255,0.7) inset;
+}
+.tab{ position:relative; overflow:hidden; }
+.tab:hover{ color:#fff; background:rgba(34,231,255,0.10); text-shadow:0 0 12px rgba(34,231,255,0.6); }
+.tab.active{
+  color:#fff;
+  background:linear-gradient(135deg, var(--neon-mag), #ff5a3d 60%, var(--neon-purple));
+  box-shadow:0 0 0 1px rgba(255,255,255,0.18) inset, 0 8px 26px -8px rgba(255,45,143,0.95), 0 0 20px -6px rgba(168,107,255,0.8);
+  text-shadow:0 1px 6px rgba(0,0,0,0.5);
+}
+.tab.active::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.5) 48%, transparent 62%);
+  transform:translateX(-120%); animation:tab-shine 3.4s ease-in-out infinite;
+}
+@keyframes tab-shine{ 0%,72%{ transform:translateX(-120%);} 88%,100%{ transform:translateX(120%);} }
+.tab:focus-visible{ outline:none; box-shadow:0 0 0 2px var(--neon-cyan), 0 0 16px rgba(34,231,255,0.7); }
+
+/* ---------- товчнууд ---------- */
+.btn{ border-radius:11px; letter-spacing:.2px; }
+.btn-primary{
+  background:linear-gradient(135deg, var(--neon-mag), #ff4d4d);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.16) inset, 0 10px 26px -12px rgba(255,45,143,1), 0 0 18px -8px rgba(255,45,143,0.9);
+}
+.btn-primary:hover{ filter:brightness(1.12) saturate(1.1); box-shadow:0 0 0 1px rgba(255,255,255,0.22) inset, 0 14px 34px -12px rgba(255,45,143,1), 0 0 26px -6px rgba(255,45,143,0.95); }
+.btn-ghost{
+  background:linear-gradient(180deg, rgba(31,24,56,0.9), rgba(20,15,38,0.9));
+  border-color:rgba(120,200,255,0.24); color:#dfe6ff;
+}
+.btn-ghost:hover{ border-color:var(--neon-cyan); color:#fff; box-shadow:0 0 18px -6px rgba(34,231,255,0.75); }
+.btn-danger-ghost{
+  background:rgba(255,45,107,0.10); color:#ff86ab; border-color:rgba(255,45,107,0.4);
+}
+.btn-danger-ghost:hover{ background:rgba(255,45,107,0.2); box-shadow:0 0 18px -6px rgba(255,45,107,0.8); color:#fff; }
+.btn-donate{
+  background:linear-gradient(135deg,#ffe066,#ff9f1c); color:#241a05;
+  box-shadow:0 10px 26px -12px rgba(255,207,61,1), 0 0 18px -8px rgba(255,207,61,0.9);
+}
+.btn:focus-visible{ outline:none; box-shadow:0 0 0 2px var(--neon-cyan), 0 0 16px rgba(34,231,255,0.7); }
+
+/* ---------- гарчиг, текст гэрэл ---------- */
+.panel-head h2{ text-shadow:0 0 20px rgba(34,231,255,0.28); }
+.sub-head{ color:#cfd6ff; }
+.score-num{ text-shadow:0 0 24px currentColor; }
+.score-item.win .score-num{ color:var(--green); }
+.score-item.lose .score-num{ color:var(--red); }
+
+/* ---------- талбар/инпут фокус ---------- */
+#playerInput:focus,
+.num-input:focus,
+.roster-search input:focus,
+.donate-acc:hover,
+input.rk-pts{
+  border-color:var(--neon-cyan) !important;
+  box-shadow:0 0 0 3px rgba(34,231,255,0.16), 0 0 20px -6px rgba(34,231,255,0.7) !important;
+}
+.login-card input:focus{ border-color:var(--neon-cyan); box-shadow:0 0 0 3px rgba(34,231,255,0.16); }
+.num-box:focus, .mv-sel:focus, .mv-team:focus{ border-color:var(--neon-cyan); box-shadow:0 0 0 3px rgba(34,231,255,0.16); }
+
+/* ---------- роль самбар, тоглогчийн карт ---------- */
+.role-col{
+  background:linear-gradient(180deg, rgba(28,21,52,0.9), rgba(17,13,32,0.9));
+  border-color:rgba(120,200,255,0.12);
+}
+.role-col::before{ height:3px; box-shadow:0 0 14px var(--role-color); }
+.role-col.dragover{ box-shadow:0 0 0 1px var(--role-color) inset, 0 0 30px -12px var(--role-color); }
+.role-num, .rc-num{ box-shadow:0 0 14px -4px var(--role-color); }
+.player-card{
+  background:linear-gradient(180deg, rgba(35,27,62,0.9), rgba(24,18,44,0.9));
+  border-color:rgba(120,200,255,0.12);
+}
+.player-card:hover{ border-color:rgba(34,231,255,0.45); box-shadow:0 0 16px -8px rgba(34,231,255,0.9); }
+.role-pick.active{ box-shadow:0 0 0 1px var(--role-color) inset, 0 10px 24px -14px var(--role-color); }
+
+/* ---------- багийн карт ---------- */
+.team-card{
+  border-color:rgba(120,200,255,0.14);
+  box-shadow:0 18px 44px -30px rgba(0,0,0,0.95);
+}
+.team-card:hover{ box-shadow:0 22px 50px -28px color-mix(in srgb, var(--team-color, var(--red)) 60%, transparent); }
+.team-card.dragover{ box-shadow:0 0 0 2px var(--team-color, var(--red)) inset, 0 0 34px -12px var(--team-color, var(--red)); }
+.team-dot{ box-shadow:0 0 12px var(--team-color,var(--red)), 0 0 26px color-mix(in srgb, var(--team-color,var(--red)) 60%, transparent); }
+.team-card.is-win{ border-color:rgba(34,255,157,0.65); box-shadow:0 0 0 1px rgba(34,255,157,0.25), 0 22px 50px -26px rgba(34,255,157,0.9); }
+.team-name{ text-shadow:0 0 18px rgba(255,255,255,0.12); }
+
+/* ---------- статус, team-sum pills ---------- */
+.status-ready{ box-shadow:0 0 16px -6px rgba(34,255,157,0.9); }
+.status-incomplete{ box-shadow:0 0 16px -6px rgba(255,207,61,0.9); }
+.status-lose{ box-shadow:0 0 16px -6px rgba(255,45,107,0.9); }
+.team-sum.ok{ box-shadow:0 0 14px -6px rgba(34,255,157,0.9); }
+.team-sum.bad{ box-shadow:0 0 14px -6px rgba(255,45,107,0.9); }
+
+/* ---------- үр дүн товч ---------- */
+.result-btn.win.active{ box-shadow:0 0 20px -6px rgba(34,255,157,0.9); }
+.result-btn.lose.active{ box-shadow:0 0 20px -6px rgba(255,45,107,0.9); }
+
+/* ---------- шигшээ (bracket) ---------- */
+.b-row.win{ box-shadow:0 0 20px -8px rgba(34,255,157,0.9); }
+button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba(34,231,255,0.9); }
+.b-badge{ text-shadow:0 1px 4px rgba(0,0,0,0.6); }
+.tour-tab.active{ box-shadow:0 0 20px -8px rgba(34,255,157,0.9); }
+
+/* ---------- аварга ---------- */
+.champ.done{
+  border-color:var(--neon-gold);
+  box-shadow:0 0 0 1px rgba(255,207,61,0.3), 0 22px 50px -26px rgba(255,207,61,0.95), 0 0 30px -10px rgba(255,207,61,0.7);
+}
+.champ .champ-name{ text-shadow:0 0 20px rgba(255,207,61,0.4); }
+
+/* ---------- ранк ---------- */
+.tier-hex{ filter:drop-shadow(0 0 10px color-mix(in srgb, var(--c) 65%, transparent)); }
+.rank-row{
+  background:linear-gradient(180deg, rgba(23,17,43,0.85), rgba(16,12,30,0.85));
+  border-color:rgba(120,200,255,0.10);
+}
+.rank-row:hover{ border-color:rgba(34,231,255,0.3); }
+.rank-row.p1{ border-color:rgba(255,207,61,0.55); box-shadow:0 0 26px -14px rgba(255,207,61,0.9), 0 0 0 1px rgba(255,207,61,0.15) inset; }
+.rank-row.p2{ border-color:rgba(195,203,220,0.4); box-shadow:0 0 22px -16px rgba(195,203,220,0.8); }
+.rank-row.p3{ border-color:rgba(205,127,50,0.45); box-shadow:0 0 22px -16px rgba(205,127,50,0.85); }
+.rk-pts{ text-shadow:0 0 14px color-mix(in srgb, var(--c) 55%, transparent); }
+
+/* ---------- түүх ---------- */
+.hist-card{ border-color:rgba(120,200,255,0.12); }
+.hist-card[open] > summary{ box-shadow:0 0 24px -18px rgba(34,231,255,0.9); }
+.hist-champ{ box-shadow:0 0 16px -6px rgba(34,255,157,0.9); }
+
+/* ---------- ticker ---------- */
+.top-ticker{
+  background:linear-gradient(90deg, rgba(20,15,38,0.95), rgba(30,22,56,0.9), rgba(20,15,38,0.95));
+  border-bottom:1px solid rgba(255,45,143,0.25);
+  box-shadow:0 8px 26px -20px rgba(255,45,143,0.9);
+}
+.tk-item .tk-pts{ text-shadow:0 0 12px rgba(34,255,157,0.6); }
+
+/* ---------- toast, modal, login ---------- */
+.toast{
+  background:linear-gradient(180deg, rgba(31,24,56,0.98), rgba(18,13,34,0.98));
+  border-color:rgba(34,231,255,0.35);
+  box-shadow:0 16px 40px rgba(0,0,0,0.6), 0 0 30px -12px rgba(34,231,255,0.9);
+}
+.modal{
+  border:1px solid rgba(120,200,255,0.18);
+  box-shadow:0 30px 70px rgba(0,0,0,0.7), 0 0 50px -20px rgba(168,107,255,0.8);
+}
+.login-gate{
+  background:
+    radial-gradient(900px 500px at 50% -10%, rgba(255,45,143,0.22), transparent 60%),
+    radial-gradient(800px 500px at 10% 110%, rgba(34,231,255,0.16), transparent 60%),
+    radial-gradient(800px 500px at 90% 110%, rgba(168,107,255,0.18), transparent 60%),
+    var(--bg);
+}
+.login-card{
+  border-color:rgba(120,200,255,0.18);
+  box-shadow:0 30px 70px rgba(0,0,0,0.6), 0 0 60px -24px rgba(34,231,255,0.9), 0 0 60px -30px rgba(255,45,143,0.9);
+}
+.login-card h1 span{ color:var(--neon-mag); text-shadow:0 0 16px rgba(255,45,143,0.9); }
+
+@media (prefers-reduced-motion: reduce){
+  .tab.active::after{ animation:none; }
+  body::after{ }
+}
+@media (max-width:520px){
+  .panel::before, .panel::after{ width:18px; height:18px; }
+}
 </style>
 </head>
 <body>
@@ -644,6 +900,16 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
         <button class="donate-acc" id="donateAcc2" type="button" title="Хуулах">
           <span>5246365002</span><i>⧉</i>
         </button>
+      </div>
+    </div>
+    <div class="donate-wrap">
+      <button class="btn btn-ghost" id="btnDiscord" type="button" aria-haspopup="true" aria-expanded="false">Discord</button>
+      <div class="donate-pop discord-pop" id="discordPop" hidden>
+        <div class="donate-bank">Discord webhook холбоос</div>
+        <input type="text" id="discordUrl" class="discord-input" placeholder="https://discord.com/api/webhooks/...">
+        <label class="discord-check"><input type="checkbox" id="discordAuto"> Тэмцээн дуусахад автоматаар илгээх</label>
+        <button class="btn btn-primary discord-save" id="discordSave" type="button">Хадгалах</button>
+        <button class="btn btn-ghost discord-test" id="discordTest" type="button">Туршилт илгээх</button>
       </div>
     </div>
     <button class="btn btn-danger-ghost" id="btnResetAll">Бүртгэл арилгах</button>
@@ -2013,9 +2279,10 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
   function endTournament(){
     if(state.cur < 0) return;
     var no = state.tours[state.cur].no;
-    confirmBox('Тэмцээн №' + no + '-г дуусгах уу?', 'Тэмцээн «Түүх» цэсэнд хадгалагдаж, энд жагсаалтаас арилна. Ранкын оноо хэвээр үлдэнэ. Оролцогчид дараагийн тэмцээнд орохгүй хэвээр байна.', function(){
+    confirmBox('Тэмцээн №' + no + '-г дуусгах уу?', 'Тэмцээн «Түүх» цэсэнд хадгалагдаж, энд жагсаалтаас арилна. Ранкын оноо хэвээр үлдэнэ.', function(){
       var i = state.cur;
-      state.history.unshift(snapshotTour(no));
+      var snap = snapshotTour(no);
+      state.history.unshift(snap);
       if(state.history.length > 300) state.history.length = 300;
       closeTour();
       state.tours.splice(i, 1);
@@ -2023,6 +2290,7 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
       else state.view = 'hist';
       save(); render(); window.scrollTo(0, 0);
       toast('Тэмцээн №' + no + ' түүхэнд хадгалагдлаа');
+      sendDiscordResult(snap);
     });
   }
 
@@ -2466,6 +2734,72 @@ button.pts-pill:focus-visible{ outline:2px solid var(--red); outline-offset:2px;
           navigator.clipboard.writeText(txt).then(done).catch(done);
         } else done();
       });
+    });
+  })();
+
+  /* ---------- Discord webhook ---------- */
+  var DC_URL_KEY = 'role5teams_discord_url';
+  var DC_AUTO_KEY = 'role5teams_discord_auto';
+  function dcSendRaw(content){
+    var url = (localStorage.getItem(DC_URL_KEY) || '').trim();
+    if(!url) return;
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: content })
+    }).catch(function(){ toast('Discord руу илгээж чадсангүй — холбоосоо шалгана уу'); });
+  }
+  function sendDiscordResult(snap){
+    var auto = localStorage.getItem(DC_AUTO_KEY) === '1';
+    var url = (localStorage.getItem(DC_URL_KEY) || '').trim();
+    if(!auto || !url) return;
+    var msg;
+    if(snap.champion){
+      var team = snap.teams.filter(function(t){ return t.name === snap.champion; })[0];
+      var lines = ['🏆 **Тэмцээн №' + snap.no + '** дууслаа!', 'Аварга баг: **' + snap.champion + '**'];
+      if(team){
+        team.players.slice().sort(function(a,b){ return a.role - b.role; }).forEach(function(p){
+          lines.push(p.role + ': ' + p.name);
+        });
+      }
+      msg = lines.join('\n');
+    } else {
+      msg = '⚠️ Тэмцээн №' + snap.no + ' дуусгагдлаа (аварга тодроогүй).';
+    }
+    dcSendRaw(msg);
+  }
+  (function discordPopover(){
+    var btn = document.getElementById('btnDiscord');
+    var pop = document.getElementById('discordPop');
+    if(!btn || !pop) return;
+    var urlInput = document.getElementById('discordUrl');
+    var autoBox = document.getElementById('discordAuto');
+    urlInput.value = localStorage.getItem(DC_URL_KEY) || '';
+    autoBox.checked = localStorage.getItem(DC_AUTO_KEY) === '1';
+    function close(){ pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    function open(){ pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); }
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(pop.hidden) open(); else close();
+    });
+    document.addEventListener('click', function(e){
+      if(!pop.hidden && !pop.contains(e.target) && e.target !== btn) close();
+    });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') close(); });
+    pop.addEventListener('click', function(e){ e.stopPropagation(); });
+    document.getElementById('discordSave').addEventListener('click', function(){
+      try{
+        localStorage.setItem(DC_URL_KEY, urlInput.value.trim());
+        localStorage.setItem(DC_AUTO_KEY, autoBox.checked ? '1' : '0');
+        toast('Discord тохиргоо хадгалагдлаа');
+      }catch(e){ toast('Хадгалж чадсангүй'); }
+    });
+    document.getElementById('discordTest').addEventListener('click', function(){
+      var u = urlInput.value.trim();
+      if(!u){ toast('Эхлээд webhook холбоосоо оруулна уу'); return; }
+      localStorage.setItem(DC_URL_KEY, u);
+      dcSendRaw('🔔 **85-ийн лод** — тест зурвас. Холболт ажиллаж байна!');
+      toast('Тест зурвас илгээлээ — Discord сувгаасаа шалгана уу');
     });
   })();
 
