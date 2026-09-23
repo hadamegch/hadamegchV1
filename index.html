@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>85-ийн лод</title>
+<meta name="theme-color" content="#06050c">
+<meta name="description" content="85-ийн лод — рольд бүртгээд багт хувааж, тэмцээн зохион байгуулах, ранк хөтлөх хэрэгсэл.">
+<meta property="og:title" content="85-ийн лод">
+<meta property="og:description" content="Рольд бүртгээд багт хуваана — тэмцээн, ранк, түүх.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306050c'/%3E%3Crect x='9' y='30' width='7' height='25' rx='3' fill='%23ff2f4b'/%3E%3Crect x='19' y='20' width='7' height='35' rx='3' fill='%237a5cff'/%3E%3Crect x='29' y='34' width='7' height='21' rx='3' fill='%232f9dff'/%3E%3Crect x='39' y='13' width='7' height='42' rx='3' fill='%232fe57a'/%3E%3Crect x='49' y='26' width='7' height='29' rx='3' fill='%23ffcb47'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Oswald:wght@500;600&display=swap&subset=cyrillic">
@@ -852,6 +858,30 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
 @media (max-width:520px){
   .panel::before, .panel::after{ width:18px; height:18px; }
 }
+
+/* ---------- view transition + celebration ---------- */
+main.wrap.view-enter{ animation:view-in .3s cubic-bezier(.2,.8,.2,1); }
+@keyframes view-in{
+  from{ opacity:0; transform:translateY(12px) scale(.995); }
+  to{ opacity:1; transform:none; }
+}
+.confetti-layer{ position:fixed; inset:0; z-index:400; pointer-events:none; overflow:hidden; }
+.confetti{
+  position:absolute; top:-14px; display:block; width:8px; height:14px; border-radius:2px;
+  box-shadow:0 0 10px currentColor; animation:confetti-fall linear forwards;
+}
+@keyframes confetti-fall{
+  to{ transform:translate3d(var(--dx), 112vh, 0) rotate(var(--rot)); opacity:.85; }
+}
+.champ.done{ animation:champ-pulse 1.7s ease-in-out infinite; }
+@keyframes champ-pulse{
+  0%,100%{ box-shadow:0 0 0 1px rgba(255,207,61,.3), 0 22px 50px -26px rgba(255,207,61,.95), 0 0 30px -10px rgba(255,207,61,.7); }
+  50%{ box-shadow:0 0 0 1px rgba(255,207,61,.55), 0 22px 50px -26px rgba(255,207,61,1), 0 0 48px -8px rgba(255,207,61,.95); }
+}
+@media (prefers-reduced-motion: reduce){
+  main.wrap.view-enter, .champ.done, .confetti{ animation:none !important; }
+  .confetti-layer{ display:none; }
+}
 </style>
 </head>
 <body>
@@ -890,6 +920,9 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
   </nav>
   <div class="topbar-actions">
     <button class="btn btn-ghost" id="btnCopy">Багуудыг хуулах</button>
+    <button class="btn btn-ghost" id="btnExport" type="button" title="Бүх өгөгдлийг JSON файл болгож татах">Нөөц авах</button>
+    <button class="btn btn-ghost" id="btnImport" type="button" title="Нөөц JSON файлаас сэргээх">Нөөц сэргээх</button>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
     <div class="donate-wrap">
       <button class="btn btn-donate" id="btnDonate" type="button" aria-haspopup="true" aria-expanded="false">Данс</button>
       <div class="donate-pop" id="donatePop" hidden>
@@ -1047,6 +1080,7 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
       <input type="search" id="rankSearch" placeholder="Нэрээр хайх" autocomplete="off" aria-label="Ранкаас нэрээр хайх">
     </div>
     <div class="roster-bar">
+      <button class="btn btn-primary" id="btnRankSend" type="button" title="Бүх тоглогчийн ранк жагсаалтыг Discord webhook руу илгээх">Discord-д илгээх</button>
       <button class="btn btn-danger-ghost" id="btnRankReset">Ранк арилгах</button>
       <span class="count-badge" id="rankInfo"></span>
     </div>
@@ -1507,6 +1541,21 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
     }
   }
 
+  function buildRankList(){
+    var map = {};
+    roster.forEach(function(e){ map[e.name.toLowerCase()] = { name:e.name, role:e.role }; });
+    Object.keys(ranks).forEach(function(k){
+      if(!map[k]) map[k] = { name:ranks[k].name, role:null };
+    });
+    state.players.forEach(function(p){ map[p.name.toLowerCase()] = { name:p.name, role:p.role }; });
+    var all = Object.keys(map).map(function(k){
+      var rec = ranks[k] || { pts:START_PTS, w:0, l:0, t:0, g:0 };
+      return { key:k, name:map[k].name, role:map[k].role, rec:rec };
+    }).sort(function(a, b){ return b.rec.pts - a.rec.pts || a.name.localeCompare(b.name); });
+    all.forEach(function(x, i){ x.place = i + 1; });
+    return all;
+  }
+
   function renderRank(){
     // тайлбар
     var lg = document.getElementById('rankLegend');
@@ -1532,17 +1581,7 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
     });
 
     // жагсаалт: хадгалсан нэрс + ранктай хүмүүс
-    var map = {};
-    roster.forEach(function(e){ map[e.name.toLowerCase()] = { name:e.name, role:e.role }; });
-    Object.keys(ranks).forEach(function(k){
-      if(!map[k]) map[k] = { name:ranks[k].name, role:null };
-    });
-    state.players.forEach(function(p){ map[p.name.toLowerCase()] = { name:p.name, role:p.role }; });
-    var all = Object.keys(map).map(function(k){
-      var rec = ranks[k] || { pts:START_PTS, w:0, l:0, t:0, g:0 };
-      return { key:k, name:map[k].name, role:map[k].role, rec:rec };
-    }).sort(function(a, b){ return b.rec.pts - a.rec.pts || a.name.localeCompare(b.name); });
-    all.forEach(function(x, i){ x.place = i + 1; });
+    var all = buildRankList();
 
     var q = rankQuery.trim().toLowerCase();
     var list = all.filter(function(x){ return !q || x.name.toLowerCase().indexOf(q) !== -1; });
@@ -2029,6 +2068,14 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
       if(state.tours.length && state.cur < 0) openTour(state.lastTour < state.tours.length ? state.lastTour : 0);
     } else closeTour();
     state.view = v; save(); render(); window.scrollTo(0, 0);
+    animateView();
+  }
+  function animateView(){
+    var m = document.querySelector('main.wrap:not([hidden])');
+    if(!m) return;
+    m.classList.remove('view-enter');
+    void m.offsetWidth;
+    m.classList.add('view-enter');
   }
 
   function shuffleSeed(n){
@@ -2640,6 +2687,42 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
     grid.innerHTML = '';
     state.teams.forEach(function(t, i){ grid.appendChild(teamCard(t, i)); });
     refreshSums();
+
+    maybeCelebrate();
+  }
+
+  /* ---------- аварга тодроход баяр ---------- */
+  var celebratedKey = null;
+  function maybeCelebrate(){
+    var key = null;
+    if(state.cur >= 0 && state.view === 'tour'){
+      try{
+        if(buildBracket().champion !== undefined) key = 't' + state.cur;
+      }catch(e){}
+    }
+    if(key && key !== celebratedKey){ celebratedKey = key; celebrate(); }
+    else if(!key){ celebratedKey = null; }
+  }
+  function celebrate(){
+    var layer = document.createElement('div');
+    layer.className = 'confetti-layer';
+    var colors = ['#22e7ff','#ff2d8f','#a86bff','#22ff9d','#ffcf3d','#ff4d4d'];
+    for(var i = 0; i < 70; i++){
+      var c = document.createElement('i');
+      c.className = 'confetti';
+      var col = colors[i % colors.length];
+      c.style.left = (Math.random() * 100) + '%';
+      c.style.background = col;
+      c.style.color = col;
+      c.style.setProperty('--dx', (Math.random() * 160 - 80).toFixed(0) + 'px');
+      c.style.setProperty('--rot', (Math.random() * 720 + 360).toFixed(0) + 'deg');
+      c.style.animationDuration = (1.6 + Math.random() * 1.2).toFixed(2) + 's';
+      c.style.animationDelay = (Math.random() * 0.4).toFixed(2) + 's';
+      layer.appendChild(c);
+    }
+    document.body.appendChild(layer);
+    setTimeout(function(){ if(layer.parentNode) layer.parentNode.removeChild(layer); }, 3400);
+    toast('🏆 Аварга тодорлоо!');
   }
 
   /* ---------- controls ---------- */
@@ -2672,6 +2755,7 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
   });
   var rankSearch = document.getElementById('rankSearch');
   rankSearch.addEventListener('input', function(){ rankQuery = rankSearch.value; renderRank(); });
+  document.getElementById('btnRankSend').addEventListener('click', sendRankToDiscord);
   document.getElementById('btnRankReset').addEventListener('click', function(){
     confirmBox('Ранкыг арилгах уу?', 'Бүх тоглогчийн оноо, хожил/хожигдол, аварга цол устана. Хадгалсан нэрс үлдэнэ.', function(){
       ranks = {}; state.applied = null; saveRanks(); save(); render(); toast('Ранк арилгагдлаа');
@@ -2768,6 +2852,30 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
     }
     dcSendRaw(msg);
   }
+  function sendRankToDiscord(){
+    var url = (localStorage.getItem(DC_URL_KEY) || '').trim();
+    if(!url){ toast('Эхлээд Discord webhook холбоосоо тохируулна уу (Discord товч)'); return; }
+    var all = buildRankList();
+    if(!all.length){ toast('Илгээх ранк жагсаалт алга'); return; }
+    var lines = all.map(function(x){
+      var t = tierOf(x.rec.pts);
+      var head = x.place === 1 ? '🥇' : x.place === 2 ? '🥈' : x.place === 3 ? '🥉' : ('**' + x.place + '.**');
+      return head + ' ' + x.name + ' — ' + t.label + ' · ' + x.rec.pts + ' оноо · ' + x.rec.w + 'W-' + x.rec.l + 'L' + (x.rec.t ? ' · 🏆' + x.rec.t : '');
+    });
+    var header = '📊 **85-ийн лод — Ранк жагсаалт** (' + all.length + ' тоглогч)';
+    var chunks = [];
+    var cur = header;
+    lines.forEach(function(ln){
+      if((cur + '\n' + ln).length > 1900){ chunks.push(cur); cur = header + ' *(үргэлжлэл)*'; }
+      cur += '\n' + ln;
+    });
+    if(cur) chunks.push(cur);
+    chunks.forEach(function(msg, i){
+      setTimeout(function(){ dcSendRaw(msg); }, i * 700);
+    });
+    toast('Ранк жагсаалтыг Discord руу илгээлээ (' + chunks.length + ' зурвас)');
+  }
+
   (function discordPopover(){
     var btn = document.getElementById('btnDiscord');
     var pop = document.getElementById('discordPop');
@@ -2800,6 +2908,71 @@ button.b-row:hover{ border-color:var(--neon-cyan); box-shadow:0 0 16px -8px rgba
       localStorage.setItem(DC_URL_KEY, u);
       dcSendRaw('🔔 **85-ийн лод** — тест зурвас. Холболт ажиллаж байна!');
       toast('Тест зурвас илгээлээ — Discord сувгаасаа шалгана уу');
+    });
+  })();
+
+  /* ---------- нөөц авах / сэргээх (JSON) ---------- */
+  (function backup(){
+    var KEYS = [KEY, RKEY, RANK_KEY, DC_URL_KEY, DC_AUTO_KEY];
+    var fileInput = document.getElementById('importFile');
+    document.getElementById('btnExport').addEventListener('click', function(){
+      var out = { app:'85-iin-lod', v:1, exportedAt:new Date().toISOString(), data:{} };
+      KEYS.forEach(function(k){
+        var v = localStorage.getItem(k);
+        if(v !== null) out.data[k] = v;
+      });
+      var blob = new Blob([JSON.stringify(out, null, 2)], { type:'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = '85-iin-lod-nuuts-' + new Date().toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+      toast('Нөөц файл татагдлаа');
+    });
+    document.getElementById('btnImport').addEventListener('click', function(){ fileInput.click(); });
+    fileInput.addEventListener('change', function(){
+      var f = fileInput.files && fileInput.files[0];
+      if(!f) return;
+      var reader = new FileReader();
+      reader.onload = function(){
+        var parsed = null;
+        try{ parsed = JSON.parse(reader.result); }catch(e){}
+        fileInput.value = '';
+        var data = parsed && parsed.data && typeof parsed.data === 'object' ? parsed.data : parsed;
+        if(!data || typeof data !== 'object'){ toast('Нөөц файл уншигдахгүй байна'); return; }
+        confirmBox('Нөөцөөс сэргээх үү?', 'Одоогийн бүх өгөгдөл (бүртгэл, ранк, түүх, тохиргоо) сонгосон файлаар солигдоно.', function(){
+          KEYS.forEach(function(k){
+            if(typeof data[k] === 'string') localStorage.setItem(k, data[k]);
+            else localStorage.removeItem(k);
+          });
+          location.reload();
+        });
+      };
+      reader.readAsText(f);
+    });
+  })();
+
+  /* ---------- гарын товчлуурууд ---------- */
+  (function shortcuts(){
+    var VIEW_BY_KEY = { '1':'reg', '2':'split', '3':'tour', '4':'rank', '5':'hist' };
+    document.addEventListener('keydown', function(e){
+      if(e.ctrlKey || e.metaKey || e.altKey) return;
+      var t = e.target;
+      var tag = (t && t.tagName || '').toLowerCase();
+      if(tag === 'input' || tag === 'textarea' || tag === 'select' || (t && t.isContentEditable)) return;
+      if(document.getElementById('modal').classList.contains('show')) return;
+      if(!document.getElementById('loginGate').hidden) return;
+      var v = VIEW_BY_KEY[e.key];
+      if(v){ e.preventDefault(); setView(v); return; }
+      if(e.key === '/'){
+        e.preventDefault();
+        if(state.view === 'rank') document.getElementById('rankSearch').focus();
+        else if(state.view === 'reg') document.getElementById('rosterSearch').focus();
+        else { setView('reg'); document.getElementById('rosterSearch').focus(); }
+      }
     });
   })();
 
