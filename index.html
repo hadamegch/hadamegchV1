@@ -478,7 +478,7 @@ button.b-row:hover{ border-color:var(--green); }
 .rank-legend{ display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
 .legend-group{ display:flex; align-items:center; flex-wrap:wrap; gap:10px 22px; padding:10px 14px; border-radius:var(--radius-sm); background:var(--surface-2); border:1px solid var(--line); }
 @media (min-width:1000px){
-  .rank-legend{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; }
+  .rank-legend{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:12px; }
   .legend-group{ gap:8px 10px; padding:10px 12px; }
   .legend-item{ gap:7px; }
   .legend-gname{ flex-basis:100%; }
@@ -486,7 +486,7 @@ button.b-row:hover{ border-color:var(--green); }
 .reg-summary{ display:flex; align-items:center; gap:10px 16px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
 .rs-chip{ display:flex; align-items:center; gap:5px; font-weight:800; font-size:13px; color:var(--role-color); }
 .reg-summary .btn{ margin-left:auto; }
-.legend-gname{ width:104px; white-space:nowrap; font-family:var(--display); font-size:17px; font-weight:600; letter-spacing:0.3px; }
+.legend-gname{ min-width:104px; width:auto; white-space:nowrap; font-family:var(--display); font-size:17px; font-weight:600; letter-spacing:0.3px; }
 .legend-item{ display:flex; align-items:center; gap:9px; }
 .legend-item strong{ font-family:var(--display); font-size:15px; font-weight:600; letter-spacing:0.3px; display:block; line-height:1.1; }
 .legend-item small{ font-size:11.5px; color:var(--text-2); font-weight:600; }
@@ -1313,6 +1313,7 @@ main.wrap.view-enter{ animation:view-in .3s cubic-bezier(.2,.8,.2,1); }
   var START_PTS = 1000, WIN_PTS = 25, LOSS_PTS = 25;   // аварга болсны нэмэлт оноо байхгүй
   // 3 тиер × 3 дэд шат = 9 түвшин. 1-1 хамгийн өндөр, 3-3 хамгийн доод.
   var TIER_GROUPS = [
+    { g:0, name:'85〆𝑺𝒆𝒎𝒊-𝑷𝒓𝒐', color:'#ff2d8f' },
     { g:3, name:'Хүрэл', color:'#cd7f32' },
     { g:2, name:'Алт',   color:'#ffc857' },
     { g:1, name:'Очир',  color:'#5cd6ff' }
@@ -1321,6 +1322,7 @@ main.wrap.view-enter{ animation:view-in .3s cubic-bezier(.2,.8,.2,1); }
   (function(){
     var n = 0;
     TIER_GROUPS.forEach(function(gr){
+      if(gr.g === 0) return;   // тусгай дээд тиер доор гараар нэмэгдэнэ
       for(var d = 3; d >= 1; d--){
         n++;
         TIERS.push({ n:n, label:gr.g + '-' + d, group:gr.g, div:d, name:gr.name, color:gr.color, min:0 });
@@ -1330,6 +1332,8 @@ main.wrap.view-enter{ animation:view-in .3s cubic-bezier(.2,.8,.2,1); }
     var mins = [0, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500];
     TIERS.forEach(function(t, i){ t.min = mins[i]; });
   })();
+  // тусгай дээд тиер: 2000 оноонд хүрэхэд олгогдоно
+  TIERS.push({ n:10, label:'★', group:0, div:0, name:'85〆𝑺𝒆𝒎𝒊-𝑷𝒓𝒐', color:'#ff2d8f', min:2000 });
   var ranks = {};   // нэр(жижиг үсгээр) -> {name, pts, w, l, t, g}
   var rankQuery = '';
 
@@ -1563,7 +1567,7 @@ main.wrap.view-enter{ animation:view-in .3s cubic-bezier(.2,.8,.2,1); }
     TIER_GROUPS.slice().sort(function(x, y){ return x.g - y.g; }).forEach(function(gr){
       var row = document.createElement('div'); row.className = 'legend-group';
       var gn = document.createElement('div'); gn.className = 'legend-gname';
-      gn.textContent = gr.g + ' · ' + gr.name; gn.style.color = gr.color;
+      gn.textContent = (gr.g ? gr.g + ' · ' : '') + gr.name; gn.style.color = gr.color;
       row.appendChild(gn);
       TIERS.filter(function(t){ return t.group === gr.g; })
         .sort(function(x, y){ return y.n - x.n; })
